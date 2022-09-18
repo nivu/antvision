@@ -17,6 +17,7 @@ cv2.setMouseCallback("Color frame", show_distance)
 
 while True:
     ret, depth_frame, color_frame = dc.get_frame()
+    print(ret)
 
     # Show distance for a specific point
     cv2.circle(color_frame, point, 4, (0, 0, 255))
