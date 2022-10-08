@@ -3,15 +3,19 @@ import cv2
 
 app = Flask(__name__)
 
-# camera = cv2.VideoCapture('rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream')  # use 0 for web camera
-#  for cctv camera use rtsp://username:password@ip_address:554/user=username_password='password'_channel=channel_number_stream=0.sdp' instead of camera
-# for local webcam use 
-camera = cv2.VideoCapture(1)
+pipeline = " ! ".join(["v4l2src device=/dev/video0",
+                       "video/x-raw, width=640, height=480, framerate=30/1",
+                       "videoconvert",
+                       "video/x-raw, format=(string)BGR",
+                       "appsink"
+                       ])
+
+video_capture = cv2.VideoCapture(pipeline, cv2.CAP_GSTREAMER)
 
 def gen_frames():  # generate frame by frame from camera
     while True:
         # Capture frame-by-frame
-        success, frame = camera.read()  # read the camera frame
+        success, frame = video_capture.read()  # read the camera frame
         if not success:
             break
         else:
@@ -34,4 +38,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(host='0.0.0.0')
